@@ -1,0 +1,45 @@
+import requests
+import math
+import random
+from django.http import JsonResponse
+from django.shortcuts import redirect
+
+def bitcoin_payment_type(request):
+    return
+
+def card_payment(name, email, phone,  url):
+    s_key = 'FLWSECK_TEST-776009f273d9f1ea74bb9d1cce2aa6c5-X'
+    payload = {
+        "tx_ref": ''+str(math.floor(1000000 + random.random()*9000000)),  
+        "amount": 30,
+        "currency": "USD",
+        "email": email,
+        "redirect_url": url,
+        "meta":{
+            "consumer_id":23,
+            "consumer_mac":"92a3-912ba-1192a"
+        },
+        "customer":{
+            "email":email,
+            "phonenumber":phone,
+            "name":name
+        },
+    }
+
+    # Make a POST request to Flutterwave's payment endpoint
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer "+ s_key,
+    }
+    response = requests.post("https://api.flutterwave.com/v3/payments", json=payload, headers=headers)
+
+    # Print the response content (for debugging purposes)
+    print("Flutterwave Response:", response.content)
+
+    if response.status_code == 200:
+        payment_url = response.json().get('data').get('link')
+        return payment_url
+    else:
+        # return redirect('frontend:make_payment')
+        return JsonResponse({"error": "Payment request failed"}, status=400)
+

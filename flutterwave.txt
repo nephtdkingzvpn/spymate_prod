@@ -1,0 +1,28 @@
+Card Number: 5531 8866 5214 2950
+Expiry Date: Any future date
+CVV: Any 3-digit number
+PIN: 3310
+OTP: 12345
+
+
+
+
+p_string = str(math.floor(10000000 + random.random()*90000000)), 
+                password_one = customer_email.split("@")[0]
+                password_two = customer_phone_number[2:8]
+                main_password = f'{password_one}{password_two}@@'
+                main_username = f"{password_one}@{p_string}"
+
+                new_user = User.objects.create_user(username=main_username, email=customer_email, password=main_password)
+
+                # adding names to the new user
+                # new_user.first_name = customer_name
+                # new_user.last_name = customer_name
+                # new_user.save()
+                request.session['customer_id'] = new_user.pk
+                request.session['status'] = status
+
+
+
+
+

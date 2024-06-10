@@ -1,0 +1,37 @@
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: btcpayserverdb
+      POSTGRES_USER: btcpayuser
+      POSTGRES_PASSWORD: posgress
+    # ports:
+    #   - "5432:5432"
+    expose:
+      - "5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data  
+
+  btcpayserver:
+    build:
+      context: ./btcserver/
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - BTCPAY_NETWORK=mainnet
+      - BTCPAY_HOST=http://127.0.0.1
+      - BTCPAY_POSTGRES="Server=db;Port=5432;Database=btcpayserverdb;User Id=btcpayuser;Password=posgress;"
+    volumes:
+      - "btcpayserver_data:/var/lib/docker/volumes/btcpayserver_bitcoin_datadir/_data"
+      - "btcpayserver_config:/root/.btcpayserver"
+      - "letsencrypt:/etc/letsencrypt"
+
+
+volumes:
+  db_data:  
+  btcpayserver_data:
+  btcpayserver_config:
+  letsencrypt:

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Types</title>
+</head>
+<body>
+<h2>Choose Payment Type:</h2>
+<form id="paymentForm">
+  <label>
+    <input type="radio" name="paymentType" value="PayPal"> PayPal
+  </label><br>
+  <label>
+    <input type="radio" name="paymentType" value="Card" checked> Card
+  </label><br>
+  <label>
+    <input type="radio" name="paymentType" value="Transfer"> Transfer
+  </label><br>
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+document.getElementById("paymentForm").addEventListener("submit", function(event) {
+  event.preventDefault(); // Prevent form submission
+
+  // Get the value of the checked radio button
+  const selectedPaymentType = document.querySelector('input[name="paymentType"]:checked').value;
+
+  // Log the selected payment type
+  console.log("Selected payment type:", selectedPaymentType);
+});
+</script>
+</body>
+</html>

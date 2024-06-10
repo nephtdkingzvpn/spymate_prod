@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Types</title>
+</head>
+<body>
+<h2>Choose Payment Type:</h2>
+<form id="paymentForm" method="post">
+  {% csrf_token %}
+  <label>
+    <input type="radio" name="paymentType" value="PayPal"> PayPal
+  </label><br>
+  <label>
+    <input type="radio" name="paymentType" value="Card" checked> Card
+  </label><br>
+  <label>
+    <input type="radio" name="paymentType" value="Transfer"> Transfer
+  </label><br>
+  <button type="submit">Submit</button>
+</form>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+from django.shortcuts import render
+from django.http import HttpResponse
+
+def payment_view(request):
+    if request.method == 'POST':
+        selected_payment = request.POST.get('paymentType', None)
+        if selected_payment:
+            return HttpResponse(f"Selected payment type: {selected_payment}")
+        else:
+            return HttpResponse("No payment type selected.")
+    return render(request, 'payment.html')
+
+
+    from django.urls import path
+    from .views import payment_view
+    
+    urlpatterns = [
+        path('payment/', payment_view, name='payment'),
+    ]
+    

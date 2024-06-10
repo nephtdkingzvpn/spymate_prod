@@ -1,0 +1,30 @@
+.payment__container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.payment__wrapper__small{
+    max-width: 400px;
+    width: 100%;
+    margin-inline: 10px;
+    
+}
+
+.p__type{
+    font-size: 18px;
+}
+    
+.payment__btn{
+    width: 100%;
+    border: none;
+    outline: none;
+    padding-block: 10px;
+    border-radius: 10px;
+    background: navy;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+
+}
