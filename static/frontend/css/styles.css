@@ -117,7 +117,7 @@ input[type="tel"] {
     width: 400px;
 }
 
-  /* Customize flag selector */
+/* Customize flag selector */
 .iti-flag {
     background-color: blue;
 }
@@ -442,3 +442,19 @@ input[type="tel"] {
         font-size: 17px;
     }
 }
+
+
+
+/* google translate */
+#google_translate_element {
+    color: transparent;
+  }
+#google_translate_element a {
+    display: none;
+  }
+select.google_translate_element {
+    color: black;
+  }
+div.goog-te-gadget {
+    color: transparent !important;
+  }

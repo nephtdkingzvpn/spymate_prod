@@ -1,0 +1,121 @@
+body{
+    font-family: "Roboto Condensed", sans-serif;
+}
+.logo{
+    color: rgb(0, 10, 150);
+    font-family: "Pacifico", cursive;
+    font-size: 25px;
+}
+.logo span{
+    color: #fff;
+}
+
+/* Custom CSS */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 220px;
+    background-color: #333;
+    color: #000;
+    padding: 20px;
+    transition: transform 0.3s ease;
+    z-index: 1000; /* Ensure sidebar is on top of content */
+}
+
+.sidebar .nav-link{
+    color: #fff;
+}
+
+.sidebar .nav-link:hover{
+    color: rgb(179, 176, 5);
+}
+
+.content {
+    margin-left: 220px;
+    /* Adjust margin to accommodate sidebar width */
+    padding: 20px;
+}
+
+.toggle-button {
+    display: none; /* Initially hide toggle button */
+}
+
+.close-button {
+    display: none; /* Initially hide close button */
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1500; /* Ensure close button is on top of sidebar */
+}
+
+@media screen and (max-width: 800px) {
+    .sidebar {
+        transform: translateX(-220px); /* Move sidebar off-screen */
+    }
+
+    .content {
+        margin-left: 0;
+    }
+
+    .toggle-button {
+        display: block; /* Display toggle button on mobile screens */
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 1500; /* Ensure toggle button is on top of sidebar */
+    }
+
+    .sidebar.open {
+        transform: translateX(0); /* Show sidebar on mobile screens */
+    }
+
+    .toggle-button.open {
+        display: none; /* Hide toggle button when sidebar is open */
+    }
+
+    .close-button.open {
+        display: block; /* Display close button when sidebar is open */
+    }
+}
+
+
+/* rest content start here */
+
+.content .welcome__header{
+    font-size: 20px;
+    color: rgb(0, 10, 150);
+    font-weight: 700;
+}
+
+.btn-primary{
+    background: rgb(0, 10, 150) !important;
+}
+
+.btn-search{
+    width: 100%;
+    border: none;
+    outline: none;
+    background: rgb(0, 10, 150);
+    color: #fff;
+    padding-block: 10px ;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+.intl-tel-input {
+    width: 100%;
+}
+.iti {
+    width: 100%;
+}
+
+/* bootstrap form */
+.form-control:focus,
+.form-control:not(:disabled):not([readonly]) {
+    border-color: none;
+    box-shadow: none;
+    outline: none;
+}

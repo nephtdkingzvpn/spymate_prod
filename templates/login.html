@@ -1,0 +1,70 @@
+{% extends './base.html' %}
+
+{% load static %}
+
+{% block content %}
+<style>
+    .my_card{
+        color: #fff;
+        margin-top: 50px;
+        position: relative;
+        border-radius: 5px;
+    }
+    .overlay_login{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 10;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+    }
+    .overlay_login i{
+        color: #fff;
+        font-size: 30px;
+    }
+</style>
+<div class="payment__container mb-5">
+    <div class="payment__wrapper__small">
+        <div class="card bg-dark my_card">
+            <div class="overlay_login">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </div>
+            <div class="card-body">
+                <h3 class="text-center">Login</h3>
+                {% include './alert.html' %}
+                <hr>
+                <form action="." method="POST" id="loginForm">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter Username" required>
+                    </div>
+                    <div class="mb-4">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                    </div>
+
+                    <button type="submit" class="payment__btn">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const form = document.querySelector('#loginForm');
+    const overlaySpinner = document.querySelector('.overlay_login');
+
+    form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+
+        overlaySpinner.style.display = 'flex';
+        form.submit();
+
+    });
+</script>
+{% endblock %}
