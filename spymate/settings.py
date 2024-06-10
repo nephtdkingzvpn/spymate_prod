@@ -20,7 +20,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 
 # Application definition
@@ -133,18 +133,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+    'https://spymate.onrender.com',
 ]
 
 FLUTTERWAVE_SECRET = os.environ.get('FLUTTERWAVE_SECRET')
 
 # Add NGrok URLs to the CSRF_TRUSTED_ORIGINS setting
 CSRF_TRUSTED_ORIGINS = [
-    'https://76cb-105-113-10-63.ngrok-free.app',
-    'https://76cb-105-113-10-63.ngrok-free.app/payement/details/ar-ab-ac',
-    # 'https://7331-105-116-5-149.ngrok-free.app/sp1/payment/',
-    # 'http://localhost:8000/sp1/payment/',
+    'https://spymate.onrender.com',
+    'https://spymate.onrender.com/payement/details/ar-ab-ac',
 ]
-
-# Set the CSRF_COOKIE_SAMESITE setting to 'None' for NGrok URLs
-# CSRF_COOKIE_SAMESITE = 'None'
-
