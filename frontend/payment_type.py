@@ -1,11 +1,8 @@
 import requests
-import math
 import random
-import hmac
-import hashlib
-import base64
 import uuid
 import time
+from django.conf import settings
 
 
 def bitcoin_payment_type(request):
@@ -61,18 +58,7 @@ def verify_flutterwave_signature(request):
     signature = request.headers.get('verif-hash')
     payload = request.body
 
-    # Retrieve your Flutterwave webhook secret from your environment variables or settings
-    # Make sure to replace 'YOUR_FLUTTERWAVE_WEBHOOK_SECRET' with your actual secret
-    webhook_secret = 'blazisworkingwell'
-
-    # Calculate the expected signature using HMAC-SHA256
-    # expected_signature = base64.b64encode(
-    #     hmac.new(
-    #         webhook_secret.encode('utf-8'),
-    #         payload,
-    #         hashlib.sha256
-    #     ).digest()
-    # ).decode('utf-8')
+    webhook_secret = settings.FLUTTERWAVE_SECRET
 
     # Compare the expected signature with the received signature
     if signature == webhook_secret:
