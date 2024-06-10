@@ -1,0 +1,460 @@
+:Root{
+    --main-color:rgb(0, 10, 150);
+    --main-white: #fff;
+    --btn-color: rgb(0, 73, 0);
+    --btn-hover: rgb(5, 112, 5);
+}
+body{
+    background: rgb(19, 18, 18);
+    font-family: "Roboto Condensed", sans-serif;
+}
+
+/* overlay loader spinner */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 1); /* Adjust the opacity as needed */
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay i{
+    font-size: 40px;
+}
+
+.all_first_page{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* display: none; */
+}
+
+.wrapper__all{
+    width: 100%;
+    max-width: 500px;
+    /* background: red; */
+    color: var(--main-white);
+}
+
+#logo{
+    color: var(--main-color);
+    font-family: "Pacifico", cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+#logo span{
+    color: #fff;
+    
+}
+
+.inner__container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* active users */
+
+.active__users{
+    margin-top: 35px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.active__users .table__wrapper{
+    width: 100%;
+    max-width: 350px;
+    border: 2px solid var(--main-color);
+    border-radius: 10px;
+    margin-bottom: 20px;
+
+}
+table {
+    border-collapse: collapse;
+    border-style: hidden;
+    width: 100%;
+    margin-block: 8px;
+    
+}
+
+th, td {
+    border: 1px solid var(--main-color);
+    padding: 8px;
+    text-align: left;
+    
+    text-align: center;
+}
+
+.wider-column {
+    width: 70%;
+}
+
+
+/* card phone selector */
+.phone___input{
+    width: 100%;
+    text-align: center;
+}
+
+input[type="tel"] {
+    padding: 14px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    /* width: 400px; */
+    width: 400px;
+}
+
+/* Customize flag selector */
+.iti-flag {
+    background-color: blue;
+}
+
+.btn{
+    background-color: var(--btn-color);
+    color: white;
+    padding: 10px 15px;
+    font-weight: 700;
+    font-size: 16px;
+    border: none !important;
+    outline: none !important;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 400px;
+}
+
+.btn:hover{
+    background: var(--btn-hover);
+    color: var(--main-white);
+}
+
+@media (max-width: 750px){
+
+    input[type="tel"] {
+        width: 300px;
+    }
+
+    .btn{
+        width: 300px;
+    }
+    /* .overlay i{
+        font-size: 30px;
+    } */
+
+}
+
+/* os logo part */
+
+.os_logo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.os_logo i{
+    color: var(--main-white);
+    font-size: 30px;
+    opacity: 0.7;
+    margin-bottom: 8px;
+}
+
+.os_logo p{
+    color: var(--main-white);
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.apple__icon{
+    margin-right: 40px;
+}
+
+
+/* second page progress bar */
+
+.wrapper__progress{
+    width: 100%;
+    padding: 5px 40px;
+    display: none;
+}
+
+.navbar__progress{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#progress_logo{
+    font-size: 20px;
+    color: var(--main-color);
+    font-family: "Pacifico", cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+#progress_logo span{
+    color: var(--main-white);
+}
+
+.whatsapp__btn{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-items: center;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--btn-hover);
+    color: var(--main-white);
+    padding: 0px 70px;
+    border-radius: 10px;
+}
+
+.whatsapp__btn i{
+    margin-inline: 50px;
+    font-size: 25px;
+}
+
+.whatsapp__btn p{
+    margin-top: 5px;
+    font-size: 18px;
+}
+
+
+@media (max-width: 750px){
+
+    .wrapper__progress{
+        padding: 3px 10px;
+    }
+    #progress_logo{
+        font-size: 14px; 
+    }
+
+    .whatsapp__btn{
+        padding: 0px 5px;
+        margin-left: 4px;
+    }
+
+    .whatsapp__btn i{
+        margin-inline: 5px;
+        font-size: 18px;
+    }
+
+    .whatsapp__btn p{
+        margin-top: 10px;
+        font-size: 14px;
+    }
+}
+
+
+/* body of page2 */
+
+.page2__body__wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+}
+.page2__body{
+    max-width: 500px;
+    width: 100%;
+    border-radius: 10px;
+    border: 2px solid var(--main-color);
+    padding: 10px;
+}
+
+.page2__body .phone_number{
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--main-white);
+}
+
+/* Style the progress bar container */
+.progress-container {
+    width: 80%;
+    margin: 5px auto;
+    border: 1px solid #142503;
+    border-radius: 5px;
+    padding: 3px;
+  }
+
+  /* Style the progress bar */
+  .progress-bar {
+    width: 5%;
+    height: 30px;
+    background-color: var(--btn-color);
+    border-radius: 5px;
+    text-align: center;
+    color: white;
+    transition: width 0.5s ease;
+  }
+
+  /* Style the percent number */
+  .progress-percent {
+    line-height: 30px;
+  }
+
+
+  /* handling appering list */
+
+#appearing__list {
+    list-style: none;
+    color: var(--main-white);
+    font-size: 16px;
+}
+
+.list-item {
+    opacity: 0; /* Initially hidden */
+    transform: translateY(100%); /* Move from bottom */
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+#appearing__list li{
+    margin-bottom: 15px;
+}
+
+#appearing__list i{
+    margin-right: 15px;
+    font: 17px;
+    color: var(--btn-hover);
+}
+
+@media (max-width: 750px){
+    .progress-container {
+        width: 100%;
+    }
+}
+
+
+/* page three here */
+.page__three{
+    display: none;
+}
+
+.part__two__finished{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.part__two__wrapper{
+    max-width: 600px;
+    width: 100%;
+    margin-inline: 5px;
+    background-image: url(/static/frontend/images/whats.jpg);
+    background-size: cover;
+    height: 100vh;
+    border-radius: 5px;
+    object-fit: cover;
+    padding: 40px 40px;
+}
+
+#sytem_found{
+    width: 520px;
+    border: 1px solid var(--main-color);
+    color: var(--main-white);
+    padding: 10px 15px;
+    position: fixed;
+    
+}
+
+#sytem_found .found__btn{
+    background-color: var(--btn-hover);
+    border-radius: 10px;
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#sytem_found .found__btn p{
+    font-size: 16px;
+    margin-top: 12px;
+}
+
+#sytem_found .found__btn p:first-child{
+    font-size: 24px;
+    margin-top: 27px;
+}
+
+#sytem_found .found__btn i{
+    font-size: 30px;
+    margin-top: 12px;
+}
+
+
+#sytem_found .found__charges{
+    font-size: 18px;
+    text-align: center;
+    margin-top: 26px;
+    display: none;
+    transition: 0.4s ease;
+}
+
+#sytem_found .found__charges span{
+    font-size: 20px;
+    color: rgb(243, 243, 0);
+}
+
+#sytem_found .register-btn{
+    background: var(--btn-color);
+    text-decoration: none;
+    text-align: center;
+    color: #fff;
+    border: none;
+    outline: none;
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 20px;
+    padding: 10px 5px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+    transition: 0.4s ease;
+}
+
+#sytem_found .register-btn:hover{
+    background: var(--btn-hover);
+}
+
+@media (max-width: 600px){
+    .part__two__wrapper{
+        padding: 40px 10px;
+    }
+    #sytem_found{
+        width: 320px;
+        padding: 10px 10px;
+    }
+    #sytem_found .found__charges{
+        font-size: 15px;
+    }
+    #sytem_found .found__charges span{
+        font-size: 17px;
+    }
+}
+
+
+
+/* google translate */
+#google_translate_element {
+    color: transparent;
+  }
+#google_translate_element a {
+    display: none;
+  }
+select.google_translate_element {
+    color: black;
+  }
+div.goog-te-gadget {
+    color: transparent !important;
+  }
