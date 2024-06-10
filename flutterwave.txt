@@ -25,4 +25,43 @@ p_string = str(math.floor(10000000 + random.random()*90000000)),
 
 
 
+https://appspy.online/spy1/?utm_source=ig&utm_medium=Instagram_Reels&utm_campaign=%5BPF125%5D++%5B18%2F12%5D&utm_content=Dinamico+02&src=SpyApp&fbclid=PAAaYTHSpy689qbShWWk4-jWKZHdZd2wXIJQbbkuVEH71fRCaIjlX8_mhMfvg_aem_Acp9XhAZBm747zocJWCgrmA2xk70bjz6_j1-diXgIBBAcy75kKEjRp_kvD_uQbJBYviezSZLhm90jTUlndwhQCsA
+
+<script>
+    // Function to add UTM parameters to the URL
+    function addUTMParams() {
+        // UTM parameters
+        var utmSource = 'ig';
+        var utmMedium = 'Instagram_Reels';
+        var utmCampaign = '[PF125] [18/12]';
+        var utmContent = 'Dinamico 02';
+        var src = 'SpyApp';
+
+        // Construct the URL with UTM parameters
+        var currentURL = window.location.href;
+        var newURL = currentURL;
+
+        // Check if URL already contains a query string
+        if (currentURL.indexOf('?') !== -1) {
+            newURL += '&';
+        } else {
+            newURL += '?';
+        }
+
+        // Append UTM parameters to the URL
+        newURL += 'utm_source=' + utmSource;
+        newURL += '&utm_medium=' + utmMedium;
+        newURL += '&utm_campaign=' + encodeURIComponent(utmCampaign);
+        newURL += '&utm_content=' + encodeURIComponent(utmContent);
+        newURL += '&src=' + src;
+
+        // Navigate to the new URL
+        window.location.href = newURL;
+    }
+
+    // Call the function when the page is visited or refreshed
+    addUTMParams();
+</script>
+
+
 

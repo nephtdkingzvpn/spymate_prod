@@ -126,8 +126,8 @@ CORS_ORIGIN_WHITELIST = [
 
 # Add NGrok URLs to the CSRF_TRUSTED_ORIGINS setting
 CSRF_TRUSTED_ORIGINS = [
-    'https://7331-105-116-5-149.ngrok-free.app',
-    'https://7331-105-116-5-149.ngrok-free.app/payement/details/ar-ab-ac',
+    'https://76cb-105-113-10-63.ngrok-free.app',
+    'https://76cb-105-113-10-63.ngrok-free.app/payement/details/ar-ab-ac',
     # 'https://7331-105-116-5-149.ngrok-free.app/sp1/payment/',
     # 'http://localhost:8000/sp1/payment/',
 ]

@@ -1,1 +1,44 @@
-processing
+{% extends './base.html' %}
+
+{% load static %}
+
+{% block content %}
+<style>
+.my_card{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    margin-top: 60px;
+}
+
+.my_card i {
+    color: #fff;
+    font-size: 50px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.my_card p{
+    font-size: 18px;
+}
+</style>
+
+<div class="payment__container">
+    <div class="payment__wrapper__small">
+        <div class="card bg-dark my_card">
+            <div class="content text-center">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <p class="text-center text-white">Finalizing Payment......</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    setTimeout(function() {
+        location.reload();
+    }, 5000); // Refresh after 5 seconds
+</script>
+
+{% endblock %}

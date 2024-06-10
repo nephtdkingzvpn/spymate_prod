@@ -76,6 +76,8 @@ def flutterwave_webhook(request):
                 payment.is_success = True
                 payment.save()
                 return redirect('frontend:payment_processing')
+            else:
+                return redirect('frontend:payment_failed')
         else:
             # Return an error response if the signature verification fails
             return HttpResponse(status=403)
@@ -89,26 +91,31 @@ def payment_processing(request):
     payment_id = request.session.get('payment_id')
 
     if payment_id is None:
-        # Redirect to an error page or handle the error appropriately
         return HttpResponse("Error: Payment ID not found in session")
     
     try:
-        # Retrieve payment from the database
         payment = Payment.objects.get(pk=payment_id)
         
-        # Simulate processing time
-        time.sleep(3)
-        
-        # If payment successful, redirect to confirmation page
         if payment.is_success:
+            password_one = payment.email.split("@")[0]
+            password_two = payment.phone[2:8]
+            d_ref = payment.ref.split("-")[1]
+            main_password = f'{password_one}{password_two}@@'
+            main_username = f"{password_one}-{d_ref}"
+            print(main_password)
+
+            new_user = User.objects.create_user(username=main_username, email=payment.email, password=main_password)
+
             return redirect('frontend:payment_complete')
         else:
-            # Render the processing page if payment status is not successful
             return render(request, 'payment_processing.html')
     except Payment.DoesNotExist:
-        # Handle the case where the payment record does not exist
         return HttpResponse("Error: Payment does not exist")
     
 
 def payment_complete(request):
     return render(request, 'payment_comlete.html')
+
+
+def payment_failed(request):
+    return render(request, 'payment_failed.html')

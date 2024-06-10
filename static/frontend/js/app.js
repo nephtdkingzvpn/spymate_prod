@@ -108,7 +108,7 @@ if (window.location.pathname === "/"){
         showLoader();
         setTimeout(hidePageTwo, 3000);
       }
-    }, 60); // Adjust animation speed here (milliseconds)
+    }, 600); // Adjust animation speed here (milliseconds)
   }
 
   // Function to animate a specific list item
@@ -143,7 +143,7 @@ if (window.location.pathname === "/"){
         countBtn.textContent = start;
       setTimeout(function() {
         countNumbers(start + 1, end);
-      }, 200); 
+      }, 100); 
     }
     if(start >= 33){
         showFoundCharges();
