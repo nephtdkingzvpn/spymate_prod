@@ -38,6 +38,9 @@ def make_payment(request):
 
                     # create a new payment
                     new_payment = Payment.objects.create(ref=ref, name=name, email=email, phone=phone_number)
+
+                    
+
                     request.session['payment_id'] = new_payment.id
                     return redirect(payment_url)
                 else:
@@ -112,7 +115,7 @@ def payment_processing(request):
             html_template = 'emails/success_purchase_email.html'
             context = {
                 'subject': subject,
-                'name': payment.namee,
+                'name': payment.name,
                 'username': main_username,
                 'password': main_password
             }
