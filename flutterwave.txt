@@ -7,6 +7,9 @@ OTP: 12345
 
 
 
+
+
+
 p_string = str(math.floor(10000000 + random.random()*90000000)), 
                 password_one = customer_email.split("@")[0]
                 password_two = customer_phone_number[2:8]

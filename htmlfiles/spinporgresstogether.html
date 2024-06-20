@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spinner and Progress Bar</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f0f0f0;
+}
+
+#spinner-container {
+  text-align: center;
+}
+
+#spinner {
+  border: 16px solid #f3f3f3;
+  border-top: 16px solid #3498db;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+}
+
+#processing-text {
+  margin-top: 20px;
+  font-size: 1.2em;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#progress-container {
+  width: 100%;
+  background-color: #ddd;
+  margin-top: 20px;
+}
+
+#progress-bar {
+  width: 1%;
+  height: 30px;
+  background-color: #4caf50;
+}
+
+  </style>
+</head>
+<body>
+  <div id="spinner-container">
+    <div id="spinner"></div>
+    <p id="processing-text">Processing... <span id="spinner-percent">0%</span></p>
+  </div>
+  <div id="progress-container" style="display: none;">
+    <div id="progress-bar"></div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+  let spinnerContainer = document.getElementById('spinner-container');
+  let progressContainer = document.getElementById('progress-container');
+  let progressBar = document.getElementById('progress-bar');
+  let spinnerPercent = document.getElementById('spinner-percent');
+
+  // Simulate spinner completion with percentage count
+  let spinnerCount = 0;
+  let spinnerInterval = setInterval(() => {
+    if (spinnerCount >= 100) {
+      clearInterval(spinnerInterval);
+      spinnerContainer.style.display = 'none';
+      progressContainer.style.display = 'block';
+
+      // Animate the progress bar
+      let width = 1;
+      let progressInterval = setInterval(() => {
+        if (width >= 100) {
+          clearInterval(progressInterval);
+        } else {
+          width++;
+          progressBar.style.width = width + '%';
+        }
+      }, 50); // Adjust the interval for faster/slower progress bar
+    } else {
+      spinnerCount++;
+      spinnerPercent.textContent = spinnerCount + '%';
+    }
+  }, 50); // Adjust the interval for faster/slower spinner percentage count
+});
+
+  </script>
+</body>
+</html>
