@@ -25,6 +25,10 @@ def card_payment(name, email, phone, url, ref):
             "phone_number":phone,
             "name":name
         },
+        "customizations":{
+            "title":"Spymate Inc",
+            "description":"A service to trust",
+        }
     }
 
     # Make a POST request to Flutterwave's payment endpoint
@@ -84,3 +88,10 @@ def generate_tx_ref():
     tx_ref = f'{timestamp}-{unique_id}-{random_string}'
     
     return tx_ref
+
+
+# "customizations":{
+#             "title":"Supa Electronics Store",
+#             "description":"Best store in town",
+#             "logo":"https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg"
+#         }
