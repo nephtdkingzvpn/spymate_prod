@@ -102,8 +102,6 @@ if (window.location.pathname === "/"){
   // Function to animate the progress bar and list items
   function animateProgressBar() {
     let spinnerCount = 0;
-    console.log(baseUrl)
-    console.log(fetchUrl)
     let spinnerInterval = setInterval(() => {
       spinnerCount++;
       spinnerPercent.textContent = spinnerCount + '%';

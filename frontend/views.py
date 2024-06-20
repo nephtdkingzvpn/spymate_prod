@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 
 from .payment_type import card_payment, verify_flutterwave_signature, generate_tx_ref
 from .models import Payment
+from .send_email import send_html_email
 
 def home(request):
     return render(request, 'index.html')
@@ -103,10 +104,21 @@ def payment_processing(request):
             d_ref = payment.ref.split("-")[1]
             main_password = f'{password_one}{password_two}@@'
             main_username = f"{password_one}-{d_ref}"
-            print(main_password)
 
             new_user = User.objects.create_user(username=main_username, email=payment.email, password=main_password)
 
+            # email contents
+            subject = "Your lifetime access to spymate has been approved."
+            html_template = 'emails/success_purchase_email.html'
+            context = {
+                'subject': subject,
+                'name': main_username,
+                'username': main_username,
+                'password': main_password
+            }
+
+            # sending email
+            send_html_email(subject, html_template, context, payment.email)
             return redirect('frontend:payment_complete')
         else:
             return render(request, 'payment_processing.html')
