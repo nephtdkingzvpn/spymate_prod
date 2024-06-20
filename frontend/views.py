@@ -112,7 +112,7 @@ def payment_processing(request):
             html_template = 'emails/success_purchase_email.html'
             context = {
                 'subject': subject,
-                'name': main_username,
+                'name': payment.namee,
                 'username': main_username,
                 'password': main_password
             }
