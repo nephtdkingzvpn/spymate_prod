@@ -398,13 +398,17 @@ input[type="tel"] {
 }
 
 #sytem_found .found__btn p{
-    font-size: 16px;
+    font-size: 18px;
     margin-top: 12px;
 }
 
-#sytem_found .found__btn p:first-child{
-    font-size: 24px;
-    margin-top: 27px;
+#sytem_found .found__btn p:last-child{
+    font-size: 14px;
+    /* margin-top: 27px; */
+}
+
+#sytem_found .unread__messages{
+    display: none;
 }
 
 #sytem_found .found__btn i{

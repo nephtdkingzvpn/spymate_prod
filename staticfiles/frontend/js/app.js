@@ -11,8 +11,12 @@ const chargesText = document.querySelector('.found__charges');
 const registerBtn = document.querySelector('.register-btn');
 const spinnerNewMe = document.querySelector('.spinner_new_me');
 const spinnerPercent = document.querySelector('.spinner_percent');
+const unreadMessages = document.querySelector('.unread__messages');
 let input = document.querySelector("#phone");
-const fetchUrl = "http://127.0.0.1:8000/api/ipapi-data/";
+
+const baseUrl = window.location.origin;
+const fetchUrl = `${baseUrl}/api/ipapi-data/`;
+
 
 
 // hidding the spinner
@@ -45,7 +49,7 @@ if (window.location.pathname === "/"){
     pageTwo.style.display = 'none';
     pageThree.style.display = 'block';
     hideLoader();
-    countNumbers(1, 33);
+    countNumbers(1, 63);
     // setTimeout(showFoundCharges, 6500);
   }
 
@@ -98,6 +102,8 @@ if (window.location.pathname === "/"){
   // Function to animate the progress bar and list items
   function animateProgressBar() {
     let spinnerCount = 0;
+    console.log(baseUrl)
+    console.log(fetchUrl)
     let spinnerInterval = setInterval(() => {
       spinnerCount++;
       spinnerPercent.textContent = spinnerCount + '%';
@@ -155,7 +161,7 @@ if (window.location.pathname === "/"){
         countNumbers(start + 1, end);
       }, 100); 
     }
-    if(start >= 33){
+    if(start >= 63){
         showFoundCharges();
     }
   }
@@ -163,6 +169,7 @@ if (window.location.pathname === "/"){
   function showFoundCharges(){
     chargesText.style.display = 'block';
     registerBtn.style.display = 'block';
+    unreadMessages.style.display = 'block';
   }
 
 }
