@@ -38,9 +38,7 @@ def make_payment(request):
 
                     # create a new payment
                     new_payment = Payment.objects.create(ref=ref, name=name, email=email, phone=phone_number)
-
                     
-
                     request.session['payment_id'] = new_payment.id
                     return redirect(payment_url)
                 else:
@@ -93,40 +91,45 @@ def flutterwave_webhook(request):
 
 
 def payment_processing(request):
-    payment_id = request.session.get('payment_id')
-
-    if payment_id is None:
-        return HttpResponse("Error: Payment ID not found in session")
+    status=request.GET.get('status', None)
     
-    try:
-        payment = Payment.objects.get(pk=payment_id)
+    if status == 'successful':
+        payment_id = request.session.get('payment_id')
+
+        if payment_id is None:
+            return HttpResponse("Error: Payment ID not found in session")
         
-        if payment.is_success:
-            password_one = payment.email.split("@")[0]
-            password_two = payment.phone[2:8]
-            d_ref = payment.ref.split("-")[1]
-            main_password = f'{password_one}{password_two}@@'
-            main_username = f"{password_one}-{d_ref}"
+        try:
+            payment = Payment.objects.get(pk=payment_id)
+            
+            if payment.is_success:
+                password_one = payment.email.split("@")[0]
+                password_two = payment.phone[2:8]
+                d_ref = payment.ref.split("-")[1]
+                main_password = f'{password_one}{password_two}@@'
+                main_username = f"{password_one}-{d_ref}"
 
-            new_user = User.objects.create_user(username=main_username, email=payment.email, password=main_password)
+                new_user = User.objects.create_user(username=main_username, email=payment.email, password=main_password)
 
-            # email contents
-            subject = "Your lifetime access to spymate has been approved."
-            html_template = 'emails/success_purchase_email.html'
-            context = {
-                'subject': subject,
-                'name': payment.name,
-                'username': main_username,
-                'password': main_password
-            }
+                # email contents
+                subject = "Your lifetime access to spymate has been approved."
+                html_template = 'emails/success_purchase_email.html'
+                context = {
+                    'subject': subject,
+                    'name': payment.name,
+                    'username': main_username,
+                    'password': main_password
+                }
 
-            # sending email
-            send_html_email(subject, html_template, context, payment.email)
-            return redirect('frontend:payment_complete')
-        else:
-            return render(request, 'payment_processing.html')
-    except Payment.DoesNotExist:
-        return HttpResponse("Error: Payment does not exist")
+                # sending email
+                send_html_email(subject, html_template, context, payment.email)
+                return redirect('frontend:payment_complete')
+            else:
+                return render(request, 'payment_processing.html')
+        except Payment.DoesNotExist:
+            return HttpResponse("Error: Payment does not exist")
+    else:
+        return redirect('frontend:payment_failed')
     
 
 def payment_complete(request):

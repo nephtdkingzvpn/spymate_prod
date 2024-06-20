@@ -31,8 +31,8 @@
                 <hr style="border-color: #fff;">
                 <p class="text-center text-white">Your Payment failed, might be due<br>to insufficient balance or network error, but don't worry, you can try again</p>
                 <p class="text-center">click the button below to try again</p>
-                <a class="payment__btn">Make Payment</a>
-                <p class="text-center small mt-4">if the problem persist, you can reach us through our customer care email: <a href="">customercare@spymate.online</a></p>
+                <a href="{% url 'frontend:make_payment' %}" class="payment__btn">Make Payment</a>
+                <p class="text-center small mt-4">if the problem persist, you can reach us through our customer care email: <a href="">customercare@spymate.app</a></p>
             </div>
         </div>
     </div>
