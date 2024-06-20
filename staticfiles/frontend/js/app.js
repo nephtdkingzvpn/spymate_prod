@@ -4,11 +4,15 @@ const pageThree = document.querySelector('.page__three');
 const submitBtn = document.querySelector('#number_submit_btn');
 const errMsg = document.querySelector('.error__message');
 const phonePlacer = document.querySelector('.phone_number');
+const phanePlacerTwo = document.querySelector('.phane_number2');
 const countNav = document.querySelector('#page_three_count_nav');
 const countBtn = document.querySelector('.page_three_count_btn');
 const chargesText = document.querySelector('.found__charges');
 const registerBtn = document.querySelector('.register-btn');
+const spinnerNewMe = document.querySelector('.spinner_new_me');
+const spinnerPercent = document.querySelector('.spinner_percent');
 let input = document.querySelector("#phone");
+const fetchUrl = "http://127.0.0.1:8000/api/ipapi-data/";
 
 
 // hidding the spinner
@@ -22,7 +26,7 @@ if (window.location.pathname === "/"){
       separateDialCode: true ,
       nationalMode: true,
       geoIpLookup: callback => {
-          fetch("https://ipapi.co/json")
+          fetch(fetchUrl)
             .then(res => res.json())
             .then(data => callback(data.country_code))
             .catch(() => callback("us"));
@@ -88,28 +92,34 @@ if (window.location.pathname === "/"){
     progressPercent.textContent = percent + '%';
     progressInfo.textContent = percent + '%  Concluded';
     phonePlacer.textContent = `Number: +${inputCountryCode}${phoneNumber}`;
+    phanePlacerTwo .textContent = `(+${inputCountryCode}${phoneNumber})`;
   }
 
   // Function to animate the progress bar and list items
   function animateProgressBar() {
-    var percent = 1;
-    var intervalId = setInterval(function() {
-      updateProgressBar(percent);
-      // Check if progress reaches specific percentages and trigger list item animations
-      if (percent === 8) animateListItem(0);
-      if (percent === 18) animateListItem(1);
-      if (percent === 35) animateListItem(2);
-      if (percent === 55) animateListItem(3);
-      if (percent === 80) animateListItem(4);
-      if (percent === 94) animateListItem(5);
-      percent++;
-      if (percent > 100) {
-        clearInterval(intervalId);
-        showLoader();
-        setTimeout(hidePageTwo, 3000);
+    let spinnerCount = 0;
+    let spinnerInterval = setInterval(() => {
+      spinnerCount++;
+      spinnerPercent.textContent = spinnerCount + '%';
+      if (spinnerCount >= 100) {
+        clearInterval(spinnerInterval);
+        spinnerNewMe.style.display = 'none';
+  
+        // Animate the progress bar
+        var percent = 1;
+        var intervalId = setInterval(function() {
+          updateProgressBar(percent);
+          percent++;
+          if (percent > 100) {
+            clearInterval(intervalId);
+            showLoader();
+            setTimeout(hidePageTwo, 3000);
+          }
+        }, 500); 
       }
-    }, 600); // Adjust animation speed here (milliseconds)
-  }
+    }, 250);
+
+  };
 
   // Function to animate a specific list item
   function animateListItem(index) {

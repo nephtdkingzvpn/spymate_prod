@@ -2,6 +2,7 @@ import json
 import time
 import math
 import random
+import requests
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -119,3 +120,9 @@ def payment_complete(request):
 
 def payment_failed(request):
     return render(request, 'payment_failed.html')
+
+
+
+def fetch_ipapi_data(request):
+    response = requests.get('https://ipapi.co/json')
+    return JsonResponse(response.json())
