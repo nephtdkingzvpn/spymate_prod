@@ -43,8 +43,8 @@ body{
 }
 
 #logo{
-    color: var(--main-color);
-    font-family: "Pacifico", cursive;
+    color: var(--main-white);
+    /* font-family: "Pacifico", cursive; */
     font-weight: 400;
     font-style: normal;
 }
@@ -198,9 +198,9 @@ input[type="tel"] {
 
 #progress_logo{
     font-size: 20px;
-    color: var(--main-color);
-    font-family: "Pacifico", cursive;
-    font-weight: 400;
+    color: var(--main-white);
+    /* font-family: "Pacifico", cursive; */
+    font-weight: 700;
     font-style: normal;
 }
 
