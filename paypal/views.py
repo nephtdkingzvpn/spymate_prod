@@ -175,23 +175,43 @@ class GenerateClientTokenView(View):
 @csrf_exempt  # This is needed if you are not using CSRF tokens for this endpoint
 def execute_payment(request):
     if request.method == 'POST':
+        success_url = request.build_absolute_uri(reverse('paypal:payment_success'))
+        fail_url = request.build_absolute_uri(reverse('paypal:payment_failure'))
         try:
             # Extract payment method nonce from the request
             data = json.loads(request.body)
             payment_method_nonce = data.get('nonce')
-            amount = "15.00"  
+            amount = "15.00" 
 
-            # Initialize Braintree gateway
-            braintree_service = BraintreeService()
+            # Extract additional data
+            name = data.get('fullName')
+            phone_number = data.get('phoneNumber') 
+            email = data.get('email') 
+
+            # create a payment instance
+            new_payment = Payment.objects.create(ref=generate_tx_ref(), name=name, email=email, phone=phone_number)
+
+            try:
+                # Initialize Braintree gateway
+                braintree_service = BraintreeService()
+
+                # Create a transaction
+                result = braintree_service.create_transaction(amount, payment_method_nonce)
 
 
-            # Create a transaction
-            result = braintree_service.create_transaction(amount, payment_method_nonce)
+                if result.is_success:
+                    # update new payment status
+                    new_payment.is_status = True
+                    new_payment.save()
 
-            if result.success:
-                return JsonResponse({'status': 'success', 'transaction_id': result.transaction.id})
-            else:
-                return JsonResponse({'status': 'failure', 'message': result.message}, status=400)
+                    # create user account
+                    return JsonResponse({'status': 'success', 'success_url': success_url})
+                else:
+                    return JsonResponse({'status': 'failure', 'message': result.message, 'failure_url': fail_url,}, status=400)
+            except Exception as e:
+                # Handle exceptions
+                print("Error occurred:", str(e))
+                return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     else:

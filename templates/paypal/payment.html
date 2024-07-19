@@ -92,16 +92,20 @@
         const creditCardFields = document.getElementById('credit-card-fields');
         const overlaySpinner = document.querySelector('.overlay_spinner');
         const form = document.querySelector('#paymentForm');
+        const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
 
 
         // Fetch client token and initialize Drop-In UI on page load
-        fetchClientToken().then(clientToken => {
-            if (clientToken) {
-                initializeDropIn(clientToken).then(instance => {
-                    handlePaymentSubmission(instance);
-                });
-            }
-        });
+        // if (paymentType === 'credit_card'){
+        //     fetchClientToken().then(clientToken => {
+        //         if (clientToken) {
+        //             initializeDropIn(clientToken).then(instance => {
+        //                 handlePaymentSubmission(instance);
+        //             });
+        //         }
+        //     });
+        // }
+        
         
 
         // Function to initialize Braintree Drop-In UI
@@ -127,6 +131,15 @@
             radio.addEventListener('change', function () {
                 if (this.value === 'credit_card') {
                     creditCardFields.style.display = 'block';
+
+                    // Fetch client token and initialize Drop-In UI on page load
+                    fetchClientToken().then(clientToken => {
+                        if (clientToken) {
+                            initializeDropIn(clientToken).then(instance => {
+                                handlePaymentSubmission(instance);
+                            });
+                        }
+                    });
                 } else {
                     creditCardFields.style.display = 'none';
                 }
@@ -151,14 +164,31 @@
         function handlePaymentSubmission(instance) {
             document.querySelector('#payment__btn').addEventListener('click', function (event) {
                 event.preventDefault();
+                overlaySpinner.style.display = 'flex';
 
+                // additional form data
+                const fullName = document.querySelector('#full_name').value;
+                const phoneNumber = document.querySelector('#phone_number').value;
+                const email = document.querySelector('#email').value;
+
+
+                // Tokenize payment method
                 instance.requestPaymentMethod(function (err, payload) {
                     if (err) {
                         console.error('Error getting payment method:', err);
                         return;
                     }
 
-                    console.log('Payment method:', payload);
+                    // console.log('Payment method:', payload);
+
+                    // Include additional data in payload
+                    const paymentData = {
+                        ...payload,
+                        fullName: fullName,
+                        phoneNumber: phoneNumber,
+                        email:email
+                    };
+
 
                     // Submit payload to your server to complete the payment
                     fetch('{% url "paypal:execute_payment" %}', {
@@ -167,15 +197,20 @@
                             'Content-Type': 'application/json',
                             'X-CSRFToken': '{{ csrf_token }}'
                         },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify(paymentData)
                     }).then(function(res) {
                         return res.json();
                     }).then(function(data) {
                         if (data.status === 'success') {
-                            overlaySpinner.style.display = 'none';
-                            alert('Payment completed successfully!');
+                            // overlaySpinner.style.display = 'none';
+                            console.log(data.success_url)
+                            window.location.href = data.success_url;
+                            
                         } else {
-                            alert('Payment failed: ' + data.message);
+                            // overlaySpinner.style.display = 'none';
+                            console.log(data.failure_url)
+                            window.location.href = data.failure_url;
+                            
                         }
                     }).catch(function(error) {
                         console.error('Error during payment execution:', error);
@@ -188,7 +223,6 @@
         // Handle form submission
         form.addEventListener('submit', function (event) {
             overlaySpinner.style.display = 'flex';
-            const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
 
             if (paymentType === 'credit_card') {
                 event.preventDefault();
