@@ -13,7 +13,6 @@ urlpatterns = [
 
     # braintree
     path('generate-client-token/', views.GenerateClientTokenView.as_view(), name='generate_client_token'),
-    path('create-order/', views.create_order, name='create_order'),
     path('execute-payment/', views.execute_payment, name='execute_payment'),
 
 ]

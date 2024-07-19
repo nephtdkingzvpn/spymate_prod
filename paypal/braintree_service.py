@@ -1,33 +1,6 @@
 import braintree
 from django.conf import settings
 
-# class BraintreeService:
-#     def __init__(self, environment, merchant_id, public_key, private_key):
-#         self.environment = environment
-#         self.merchant_id = merchant_id
-#         self.public_key = public_key
-#         self.private_key = private_key
-#         self.configure_braintree()
-
-#     def configure_braintree(self):
-#         braintree.Configuration.configure(
-#             self.environment,
-#             merchant_id=self.merchant_id,
-#             public_key=self.public_key,
-#             private_key=self.private_key
-#         )
-
-#     def generate_client_token(self):
-#         gateway = braintree.BraintreeGateway(
-#             braintree.Configuration(
-#                 self.environment,
-#                 merchant_id=self.merchant_id,
-#                 public_key=self.public_key,
-#                 private_key=self.private_key
-#             )
-#         )
-#         return gateway.client_token.generate()
-
 
 class BraintreeService:
     def __init__(self):
@@ -42,8 +15,18 @@ class BraintreeService:
 
     def generate_client_token(self):
         return self.gateway.client_token.generate()
+    
+    def create_transaction(self, amount, nonce):
+        return self.gateway.transaction.sale({
+            "amount": amount,
+            "payment_method_nonce": nonce,
+            "options": {
+                "submit_for_settlement": True
+            }
+        })
 
 
-# merchant_id=merchant_id,
-# public_key=public_key,
-# private_key=private_key
+# environment = braintree.Environment.Sandbox
+# merchant_id = settings.BRAINTREE_MERCHANT_ID
+# public_key = settings.BRAINTREE_PUBLIC_KEY
+# private_key = settings.BRAINTREE_PRIVATE_KEY

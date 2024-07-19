@@ -140,14 +140,6 @@ from django.views.decorators.http import require_POST
 
 class GenerateClientTokenView(View):
     def get(self, request):
-        # Replace with your actual Braintree credentials
-        environment = braintree.Environment.Sandbox
-        merchant_id = settings.BRAINTREE_MERCHANT_ID
-        public_key = settings.BRAINTREE_PUBLIC_KEY
-        private_key = settings.BRAINTREE_PRIVATE_KEY
-
-        print(private_key)
-
         # Create an instance of BraintreeService with credentials
         braintree_service = BraintreeService()
 
@@ -180,65 +172,27 @@ class GenerateClientTokenView(View):
             return JsonResponse({'error': 'Unexpected error'}, status=500)
     
 
-@csrf_exempt
-@require_POST
-def create_order(request):
-    try:
-        data = json.loads(request.body)
-        payment_method = data.get('payment_method')
-
-        if payment_method == 'credit_card':
-            payment_data = {
-                "intent": "sale",
-                "payer": {
-                    "payment_method": "paypal"  # This tells PayPal to use the hosted fields
-                },
-                "transactions": [{
-                    "amount": {
-                        "total": str(data['item_price'] * data['item_quantity']),
-                        "currency": data['item_currency'],
-                    },
-                    "item_list": {
-                        "items": [{
-                            "name": data['item_name'],
-                            "sku": data['item_sku'],
-                            "price": str(data['item_price']),
-                            "currency": data['item_currency'],
-                            "quantity": data['item_quantity']
-                        }]
-                    },
-                    "description": "This is the payment transaction description."
-                }],
-                "redirect_urls": {
-                    "return_url": request.build_absolute_uri(reverse('payment_return')),
-                    "cancel_url": request.build_absolute_uri(reverse('payment_cancel'))
-                }
-            }
-
-            paypal_payment_service = PayPalPaymentService()
-            payment = paypal_payment_service.create_payment(payment_data)
-            if payment.create():
-                return JsonResponse({'orderID': payment.id})
-            else:
-                return JsonResponse({'error': payment.error}, status=500)
-        else:
-            return JsonResponse({'error': 'Invalid payment method'}, status=400)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-    
-
-@csrf_exempt
-@require_POST
+@csrf_exempt  # This is needed if you are not using CSRF tokens for this endpoint
 def execute_payment(request):
-    try:
-        data = json.loads(request.body)
-        order_id = data.get('orderID')
-        # Assuming `payload` contains payment execution details from hosted fields
-        payment_service = PayPalPaymentService()
-        payment = payment_service.execute_payment(order_id, data)
-        if payment.success():
-            return JsonResponse({'status': 'success', 'message': 'Payment executed successfully'})
-        else:
-            return JsonResponse({'status': 'failure', 'message': payment.error}, status=500)
-    except Exception as e:
-        return JsonResponse({'status': 'failure', 'message': str(e)}, status=500)
+    if request.method == 'POST':
+        try:
+            # Extract payment method nonce from the request
+            data = json.loads(request.body)
+            payment_method_nonce = data.get('nonce')
+            amount = "15.00"  
+
+            # Initialize Braintree gateway
+            braintree_service = BraintreeService()
+
+
+            # Create a transaction
+            result = braintree_service.create_transaction(amount, payment_method_nonce)
+
+            if result.success:
+                return JsonResponse({'status': 'success', 'transaction_id': result.transaction.id})
+            else:
+                return JsonResponse({'status': 'failure', 'message': result.message}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
