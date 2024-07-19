@@ -7,9 +7,9 @@ class BraintreeService:
         self.gateway = braintree.BraintreeGateway(
             braintree.Configuration(
                 braintree.Environment.Sandbox,
-                merchant_id='nhqd9gds74k85ymn',
-                public_key='q5yg3ybysr9r6z3f',
-                private_key='ac9dee81a3287f16a61395171acf4a57'
+                merchant_id=settings.BRAINTREE_MERCHANT_ID,
+                public_key=settings.BRAINTREE_PUBLIC_KEY,
+                private_key=settings.BRAINTREE_PRIVATE_KEY
             )
         )
 
