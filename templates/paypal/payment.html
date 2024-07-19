@@ -3,7 +3,23 @@
 {% load static %}
 
 {% block content %}
+<script src="https://js.braintreegateway.com/web/3.102.0/js/client.min.js"></script>
+<script src="https://js.braintreegateway.com/web/3.102.0/js/hosted-fields.min.js"></script>
 
+<style>
+    #card-number, #cvv, #expiration-date {
+        height: 40px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+        color: #fff;
+    }
+    input:focus {
+        outline: none;
+        color: #fff;
+    }
+
+</style>
 
 <!-- payment start -->
 <div class="payment__container">
@@ -57,8 +73,7 @@
     </div>
 </div>
 <!-- payment end -->
-<script src="https://js.braintreegateway.com/web/dropin/1.18.0/js/dropin.min.js"></script>
-<script src="https://www.paypal.com/sdk/js?components=buttons,hosted-fields&client-id=AQCLP0vocjhFStmdQcjwSIjurC_blEqZXio68FAGUtpe9wLJbe6dzx3RctStiH5JX2uVXU9IZYLmNMIn"></script>
+
 
 <script>
     const form = document.querySelector('#paymentForm');
@@ -74,121 +89,157 @@
 </script>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+    });
+
     // toggle crediyt card selection
     document.addEventListener('DOMContentLoaded', function () {
         const paymentMethodRadios = document.querySelectorAll('input[name="paymentType"]');
         const creditCardFields = document.getElementById('credit-card-fields');
 
+        // fetching token for client
+        fetchClientToken().then(clientToken => {
+            if (clientToken) {
+                initializeHostedFields(clientToken);
+            }
+        });
+
+        //  integrating these functions in your main initialization process:
+        function initializeHostedFields(clientToken) {
+            createBraintreeClient(clientToken, function(clientInstance) {
+                createHostedFields(clientInstance, function(hostedFieldsInstance) {
+                    handlePaymentSubmission(hostedFieldsInstance);
+                });
+            });
+        }
+
+
+        // toggling the payment type radio
         paymentMethodRadios.forEach(radio => {
             radio.addEventListener('change', function () {
                 if (this.value === 'credit_card') {
                     creditCardFields.style.display = 'block';
-                    fetchClientToken().then(initializeHostedFields);
                 } else {
                     creditCardFields.style.display = 'none';
                 }
             });
         });
+
+
+        // Function to fetch client token from server
+        function fetchClientToken() {
+        return fetch('{% url "paypal:generate_client_token" %}')
+            .then(response => response.json())
+            .then(data => {
+                // console.log('Client token:', data.clientToken);
+                return data.clientToken;
+            })
+            .catch(error => {
+                console.error('Failed to fetch client token:', error);
+            });
+        }
+
+    
+        // function to create Braintree client instance using the provided client token.
+        function createBraintreeClient(clientToken, callback) {
+            braintree.client.create({
+                authorization: clientToken
+            }, function (clientErr, clientInstance) {
+                if (clientErr) {
+                    console.error('Error creating client:', clientErr);
+                    return;
+                }
+                callback(clientInstance);
+            });
+        }
+
+        // function to initialize the Hosted Fields using the client instance.
+        function createHostedFields(clientInstance, callback) {
+            braintree.hostedFields.create({
+                client: clientInstance,
+                styles: {
+                    'input': {
+                        'font-size': '16px',
+                        'color': '#3A3A3A'
+                    },
+                    ':focus': {
+                        'color': '#ffffff'
+                    },
+                    '.valid': {
+                        'color': 'green'
+                    },
+                    '.invalid': {
+                        'color': 'red'
+                    }
+                },
+                fields: {
+                    number: {
+                        selector: '#card-number',
+                        placeholder: 'Card Number'
+                    },
+                    cvv: {
+                        selector: '#cvv',
+                        placeholder: 'CVV'
+                    },
+                    expirationDate: {
+                        selector: '#expiration-date',
+                        placeholder: 'MM/YY'
+                    }
+                }
+            }, function (hostedFieldsErr, hostedFieldsInstance) {
+                if (hostedFieldsErr) {
+                    console.error('Error creating Hosted Fields:', hostedFieldsErr);
+                    return;
+                }
+                callback(hostedFieldsInstance);
+            });
+        }
+
+        // function to handle the payment submission using the Hosted Fields instance.
+        function handlePaymentSubmission(hostedFieldsInstance) {
+            document.querySelector('#payment__btn').addEventListener('click', function (event) {
+                event.preventDefault();
+                hostedFieldsInstance.tokenize(function (tokenizeErr, payload) {
+                    if (tokenizeErr) {
+                        console.error('Error tokenizing:', tokenizeErr);
+                        return;
+                    }
+
+                    console.log('Payment successful:', payload);
+                    // Submit payload to your server to complete the payment
+                    fetch('/execute-payment/', {
+                        method: 'post',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify(payload)
+                    }).then(function(res) {
+                        return res.json();
+                    }).then(function(data) {
+                        if (data.status === 'success') {
+                            alert('Payment completed successfully!');
+                        } else {
+                            alert('Payment failed: ' + data.message);
+                        }
+                    });
+                });
+            });
+        }
+
     });
+
+    
 
     // Fetch client token and initialize Hosted Fields on page load
     // document.addEventListener('DOMContentLoaded', function () {
     //     fetchClientToken().then(initializeHostedFields);
     // });
         
+    
 
-    // Function to fetch client token from server
-    function fetchClientToken() {
-    return fetch('{% url "paypal:generate_client_token" %}')
-        .then(response => response.json())
-        .then(data => {
-            console.log('Client token:', data.clientToken);
-            return data.clientToken;
-        })
-        .catch(error => {
-            console.error('Failed to fetch client token:', error);
-        });
-    }
-
-    // Function to initialize PayPal Hosted Fields
-    function initializeHostedFields(clientToken) {
-        return paypal.HostedFields.render({
-            createOrder: function () {
-                return fetch('/create-order/', {
-                    method: 'POST',
-                    headers: {
-                            'content-type': 'application/json'
-                        },
-                    body: JSON.stringify({
-                        payment_method: 'credit_card',
-                        item_name: '',
-                        item_sku: '',
-                        item_price: '',
-                        item_currency: '',
-                        item_quantity: ''
-                    })
-                }).then(response => response.json())
-                  .then(orderData => orderData.id)
-                  .catch(error => {
-                      console.error('Failed to create order:', error);
-                  });
-            },
-            styles: {
-                'input': {
-                    'font-size': '16px',
-                    'color': '#3A3A3A'
-                },
-                ':focus': {
-                    'color': '#333333'
-                }
-            },
-            fields: {
-                number: {
-                    selector: '#card-number',
-                    placeholder: 'Card Number'
-                },
-                cvv: {
-                    selector: '#cvv',
-                    placeholder: 'CVV'
-                },
-                expirationDate: {
-                    selector: '#expiration-date',
-                    placeholder: 'MM/YY'
-                }
-            },
-            authorization: clientToken
-        }).then(function (hostedFieldsInstance) {
-            document.querySelector('#payment__btn').addEventListener('click', function (event) {
-                event.preventDefault();
-                hostedFieldsInstance.submit().then(function (payload) {
-                    console.log('Payment successful:', payload);
-                    // Submit payload to your server to complete the payment
-                    return fetch('/execute-payment', {
-                            method: 'post',
-                            headers: {
-                                'content-type': 'application/json',
-                                'X-CSRFToken': '{{ csrf_token }}'
-                            },
-                            body: JSON.stringify(payload)
-                        }).then(function(res) {
-                            return res.json();
-                        }).then(function(data) {
-                            if (data.status === 'success') {
-                                alert('Payment completed successfully!');
-                            } else {
-                                alert('Payment failed: ' + data.message);
-                            }
-                    });
-
-                }).catch(function (error) {
-                    console.error('Payment submission error:', error);
-                    // Handle error as needed
-                });
-            });
-        }).catch(function (error) {
-            console.error('Failed to initialize PayPal Hosted Fields:', error);
-        });
-    }
+    
 
     
 </script>
