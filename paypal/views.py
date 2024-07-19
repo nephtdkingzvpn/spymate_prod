@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from .paypal_services import PayPalPaymentService, PayPalWebhookService
 from django.http import JsonResponse, HttpResponseBadRequest
+from django.conf import settings
 
 from frontend.payment_type import generate_tx_ref
 from frontend.models import Payment
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 def make_paypal_payment(request):
     if request.method == 'POST':
+        selected_payment = request.POST.get('paymentType', None)
         name = request.POST.get('full_name', None)
         email = request.POST.get('email', None)
         phone_number = request.POST.get('phone_number', None)
@@ -22,46 +24,53 @@ def make_paypal_payment(request):
 
         new_payment = Payment.objects.create(ref=generate_tx_ref(), name=name, email=email, phone=phone_number)
 
-        # constructing a payment data
-        payment_data = {
-            "intent": "sale",
-            "payer": {
-                "payment_method": "paypal"
-            },
-            "transactions": [
-                {
-                    "amount": {
-                        "total": "15.00",
-                        "currency": "USD",
+        if selected_payment:
+            if selected_payment == 'paypal':  
+                # constructing a payment data
+                payment_data = {
+                    "intent": "sale",
+                    "payer": {
+                        "payment_method": "paypal"
                     },
-                    "item_list": {
-                        "items": [
-                            {
-                                "name": name,
-                                "sku": str(new_payment.id),
-                                "price": "15.00",
+                    "transactions": [
+                        {
+                            "amount": {
+                                "total": "15.00",
                                 "currency": "USD",
-                                "quantity": 1
-                            }
-                        ]
-                    },
-                    "description": "This is a one time payment for spymate purchase."
+                            },
+                            "item_list": {
+                                "items": [
+                                    {
+                                        "name": name,
+                                        "sku": str(new_payment.id),
+                                        "price": "15.00",
+                                        "currency": "USD",
+                                        "quantity": 1
+                                    }
+                                ]
+                            },
+                            "description": "This is a one time payment for spymate purchase."
+                        }
+                    ],
+                    "redirect_urls": {
+                        "return_url": return_url,
+                        "cancel_url": cancel_url
+                    }
                 }
-            ],
-            "redirect_urls": {
-                "return_url": return_url,
-                "cancel_url": cancel_url
-            }
-        }
 
-        try:
-            paypal_payment_service = PayPalPaymentService()
-            payment = paypal_payment_service.create_payment(payment_data)
-            return redirect(payment)
-        except Exception as e:
-            logger.error(f"Unhandled exception: {e}")
-            return JsonResponse({'status': 'failure', 'message': str(e)}, status=500)
-    return render(request, 'paypal/payment.html')
+                try:
+                    paypal_payment_service = PayPalPaymentService()
+                    payment = paypal_payment_service.create_payment(payment_data)
+                    return redirect(payment)
+                except Exception as e:
+                    logger.error(f"Unhandled exception: {e}")
+                    return JsonResponse({'status': 'failure', 'message': str(e)}, status=500)
+            elif selected_payment == 'credit_card':
+                return JsonResponse({'status': 'success', 'message': 'Proceed with credit card hosted fields', 'order_id': None})
+        else:
+            return HttpResponseBadRequest("You need to select a payment type")
+    context = {'client_id':settings.PAYPAL_CLIENT_ID}
+    return render(request, 'paypal/payment.html', context)
 
 
 def payment_return(request):
@@ -117,3 +126,119 @@ def payment_success(request):
 
 def payment_failure(request):
     return render(request, 'paypal/payment_failure.html')
+
+
+
+import json
+from django.http import JsonResponse
+from django.views import View
+from .braintree_service import BraintreeService
+import braintree
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
+
+class GenerateClientTokenView(View):
+    def get(self, request):
+        # Replace with your actual Braintree credentials
+        environment = braintree.Environment.Sandbox
+        merchant_id = settings.BRAINTREE_MERCHANT_ID
+        public_key = settings.BRAINTREE_PUBLIC_KEY
+        private_key = settings.BRAINTREE_PRIVATE_KEY
+
+        print(private_key)
+
+        # Create an instance of BraintreeService with credentials
+        braintree_service = BraintreeService()
+
+        # Initialize client_token with a default value
+        client_token = None
+
+        # Generate client token using BraintreeService method
+        try:
+            client_token = braintree_service.generate_client_token()
+            return JsonResponse({'clientToken': client_token})
+        
+        except braintree.exceptions.authorization_error.AuthorizationError as e:
+            logger.error(f"Authorization error: {e}")
+            return JsonResponse({'error': 'Authorization'}, status=500)
+
+        except braintree.exceptions.authentication_error.AuthenticationError as e:
+            
+            # Handle authentication errors
+            logger.error(f"Authentication error: {e}")
+            return JsonResponse({'error': 'Authentication error'}, status=500)
+
+        except braintree.exceptions.NotFoundError as e:
+            # Handle specific errors
+            logger.error(f"Not found error: {e}")
+            return JsonResponse({'error': 'Not found error'}, status=500)
+
+        except Exception as e:
+            # Catch any unexpected exceptions
+            logger.error(f"Unexpected error: {e}")
+            return JsonResponse({'error': 'Unexpected error'}, status=500)
+    
+
+@csrf_exempt
+@require_POST
+def create_order(request):
+    try:
+        data = json.loads(request.body)
+        payment_method = data.get('payment_method')
+
+        if payment_method == 'credit_card':
+            payment_data = {
+                "intent": "sale",
+                "payer": {
+                    "payment_method": "paypal"  # This tells PayPal to use the hosted fields
+                },
+                "transactions": [{
+                    "amount": {
+                        "total": str(data['item_price'] * data['item_quantity']),
+                        "currency": data['item_currency'],
+                    },
+                    "item_list": {
+                        "items": [{
+                            "name": data['item_name'],
+                            "sku": data['item_sku'],
+                            "price": str(data['item_price']),
+                            "currency": data['item_currency'],
+                            "quantity": data['item_quantity']
+                        }]
+                    },
+                    "description": "This is the payment transaction description."
+                }],
+                "redirect_urls": {
+                    "return_url": request.build_absolute_uri(reverse('payment_return')),
+                    "cancel_url": request.build_absolute_uri(reverse('payment_cancel'))
+                }
+            }
+
+            paypal_payment_service = PayPalPaymentService()
+            payment = paypal_payment_service.create_payment(payment_data)
+            if payment.create():
+                return JsonResponse({'orderID': payment.id})
+            else:
+                return JsonResponse({'error': payment.error}, status=500)
+        else:
+            return JsonResponse({'error': 'Invalid payment method'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
+
+@csrf_exempt
+@require_POST
+def execute_payment(request):
+    try:
+        data = json.loads(request.body)
+        order_id = data.get('orderID')
+        # Assuming `payload` contains payment execution details from hosted fields
+        payment_service = PayPalPaymentService()
+        payment = payment_service.execute_payment(order_id, data)
+        if payment.success():
+            return JsonResponse({'status': 'success', 'message': 'Payment executed successfully'})
+        else:
+            return JsonResponse({'status': 'failure', 'message': payment.error}, status=500)
+    except Exception as e:
+        return JsonResponse({'status': 'failure', 'message': str(e)}, status=500)

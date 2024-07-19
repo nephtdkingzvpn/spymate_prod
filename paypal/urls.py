@@ -10,4 +10,10 @@ urlpatterns = [
     path('sp1/payment-cancel/', views.payment_cancel, name='payment_cancel'),
     path('sp1/payment-success/', views.payment_success, name='payment_success'),
     path('sp1/payment-failure/', views.payment_failure, name='payment_failure'),
+
+    # braintree
+    path('generate-client-token/', views.GenerateClientTokenView.as_view(), name='generate_client_token'),
+    path('create-order/', views.create_order, name='create_order'),
+    path('execute-payment/', views.execute_payment, name='execute_payment'),
+
 ]
