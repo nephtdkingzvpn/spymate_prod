@@ -4,10 +4,13 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from paypalcheckoutsdk.orders import OrdersCaptureRequest
+from django.contrib.auth.models import User
 import json
 
 from .paypal import PayPalClient
 from frontend.models import Payment
+from frontend.send_email import send_html_email
+
 
 def paypal_client_payment(request):
 
@@ -40,6 +43,30 @@ def capture_payment(request):
             # create a new payment instance
             new_payment = Payment.objects.create(ref=order_id, name=name, email=email, phone=phone, is_success = True)
 
+            # create user account
+            password_one = new_payment.email.split("@")[0]
+            password_two = new_payment.phone[2:8]
+            d_ref = new_payment.ref[:13]
+            main_password = f'{password_one}{password_two}@@'
+            main_username = f"{password_one}-{d_ref}"
+
+            new_user = User.objects.create_user(username=main_username, email=new_payment.email, password=main_password)
+
+            # email contents
+            subject = "Your lifetime access to spymate has been approved."
+            html_template = 'emails/success_purchase_email.html'
+            context = {
+                'subject': subject,
+                'name': new_payment.name,
+                'username': main_username,
+                'password': main_password
+            }
+
+            # sending email
+            try:
+                send_html_email(subject, html_template, context, new_payment.email)
+            except:
+                pass
             payer_name = response.result.payer.name.given_name
             return JsonResponse({'status': 'success', 'payerName': payer_name,
                                 'success_url':success_url})
