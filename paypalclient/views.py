@@ -31,6 +31,8 @@ def capture_payment(request):
         order_request = OrdersCaptureRequest(order_id)
         response = PPClient.client.execute(order_request)
 
+        print(response)
+
         # Handle response from PayPal
         if response.result.status == 'COMPLETED':
             # Payment captured successfully

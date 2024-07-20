@@ -66,12 +66,19 @@
             onApprove: function(data, actions) {
                 // Send a fetch API request to Django backend to process payment capture
                 const form = document.getElementById('paymentForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return; // Stop further execution if form is not valid
+                }
 
+                // Proceed with payment capture
                 let formData = new FormData(form);
                 let name = formData.get('full_name');
                 let phone = formData.get('phone_number');
                 let email = formData.get('email');
+                const overlaySpinner = document.querySelector('.overlay_spinner');
                 
+                overlaySpinner.style.display = 'flex';
                 return fetch('{% url "paypalclient:capture_payment" %}', {
                     method: 'POST',
                     headers: {
