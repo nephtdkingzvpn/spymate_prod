@@ -20,8 +20,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG') == 'True'
 
-ALLOWED_HOSTS = ['1b0a-102-90-57-148.ngrok-free.app', 'localhost', '127.0.0.1']
-# ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default='1b0a-102-90-57-148.ngrok-free.app').split(" ")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 
 # Application definition
@@ -38,6 +37,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'frontend',
     'paypal',
+    'paypalclient',
 ]
 
 MIDDLEWARE = [
@@ -136,7 +136,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'https://spymate.onrender.com',
-    'https://1b0a-102-90-57-148.ngrok-free.app',
+    'https://www.sandbox.paypal.com'
 ]
 
 FLUTTERWAVE_SECRET = os.environ.get('FLUTTERWAVE_SECRET')
@@ -145,8 +145,6 @@ FLUTTERWAVE_SECRET = os.environ.get('FLUTTERWAVE_SECRET')
 CSRF_TRUSTED_ORIGINS = [
     'https://spymate.onrender.com',
     'https://spymate.onrender.com/payement/details/ar-ab-ac',
-    'https://1b0a-102-90-57-148.ngrok-free.app',
-    'https://1b0a-102-90-57-148.ngrok-free.app/paypal/sp1/paypal-payment/'
 ]
 
 # Email Configuration
@@ -186,7 +184,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console', 'file'],
-            'level': 'DEBUG',
+            'level': 'CRITICAL',
             'propagate': True,
         },
     },

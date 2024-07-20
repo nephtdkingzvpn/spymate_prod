@@ -7,4 +7,5 @@ urlpatterns = [
     path('', include('frontend.urls', namespace='frontend')),
     path('account/', include('account.urls', namespace='account')),
     path('paypal/', include('paypal.urls', namespace='paypal')),
+    path('paypalclient/', include('paypalclient.urls', namespace='paypalclient')),
 ]
