@@ -201,7 +201,7 @@ def execute_payment(request):
 
                 if result.is_success:
                     # update new payment status
-                    new_payment.is_status = True
+                    new_payment.is_success = True
                     new_payment.save()
 
                     # create user account

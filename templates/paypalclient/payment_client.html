@@ -5,6 +5,15 @@
 {% block content %}
 <!-- <script src="https://www.paypal.com/sdk/js?client-id={{client_id}}&currency=USD&components=buttons&enable-funding=venmo&debug=true"></script> -->
 
+<style>
+    .currency-conversion-details p{
+        color: #fff !important;
+    }
+    .currency-conversion{
+        color: #fff !important;
+    }
+</style>
+
 <!-- payment start -->
 <div class="payment__container">
     <div class="payment__wrapper__small">
@@ -36,8 +45,12 @@
                         </div>
                         
                         <hr style="border-color: white;">
-                        <!-- PayPal Checkout buttons -->
-                        <div id="paypal-button-container"></div>
+                        <div class="paypal-side bg-white py-3 px-2">
+                            <!-- PayPal Checkout buttons -->
+                            <div id="paypal-button-container"></div>
+                        </div>
+                        
+                        
                         <!-- <button type="submit" class="payment__btn" id="payment__btn">Continue</button> -->
                     </form>
                 </div>
@@ -54,11 +67,22 @@
     document.addEventListener('DOMContentLoaded', function () {
 
         paypal.Buttons({
+            style: {
+                label: 'pay',
+                color: 'gold', // Customize text color
+                shape: 'pill', // Choose pill/rect
+                height: 40
+            },
             createOrder: function(data, actions) {
+                const form = document.getElementById('paymentForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return; // Stop further execution if form is not valid
+                }
                 return actions.order.create({
                     purchase_units: [{
                         amount: {
-                            value: '10.00', // Sample amount (replace with dynamic value)
+                            value: '15.00', // Sample amount (replace with dynamic value)
                         }
                     }]
                 });
@@ -66,10 +90,6 @@
             onApprove: function(data, actions) {
                 // Send a fetch API request to Django backend to process payment capture
                 const form = document.getElementById('paymentForm');
-                if (!form.checkValidity()) {
-                    form.reportValidity();
-                    return; // Stop further execution if form is not valid
-                }
 
                 // Proceed with payment capture
                 let formData = new FormData(form);

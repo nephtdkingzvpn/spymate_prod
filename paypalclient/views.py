@@ -7,6 +7,7 @@ from paypalcheckoutsdk.orders import OrdersCaptureRequest
 import json
 
 from .paypal import PayPalClient
+from frontend.models import Payment
 
 def paypal_client_payment(request):
 
@@ -22,7 +23,10 @@ def capture_payment(request):
         PPClient = PayPalClient()
         data = json.loads(request.body)
         order_id = data.get('orderID')
-        
+        name = data.get('name')
+        phone = data.get('phone')
+        email = data.get('email')
+
         # url success and failure
         success_url = request.build_absolute_uri(reverse('paypalclient:payment_success'))
         failure_url = request.build_absolute_uri(reverse('paypalclient:payment_failure'))
@@ -31,11 +35,11 @@ def capture_payment(request):
         order_request = OrdersCaptureRequest(order_id)
         response = PPClient.client.execute(order_request)
 
-        print(response)
-
         # Handle response from PayPal
         if response.result.status == 'COMPLETED':
-            # Payment captured successfully
+            # create a new payment instance
+            new_payment = Payment.objects.create(ref=order_id, name=name, email=email, phone=phone, is_success = True)
+
             payer_name = response.result.payer.name.given_name
             return JsonResponse({'status': 'success', 'payerName': payer_name,
                                 'success_url':success_url})
