@@ -1,0 +1,35 @@
+{% extends '../base.html' %}
+
+{% load static %}
+
+{% block content %}
+<style>
+    .my_card{
+        color: #fff;
+        margin-top: 30px;
+    }
+    i{
+        color: green;
+        font-size: 50px;
+        margin: 15px auto;
+        float: center;
+    }
+</style>
+<div class="payment__container">
+    <div class="payment__wrapper__small">
+        <div class="card bg-dark my_card">
+            <div class="card-body">
+                <center>
+                    <i class="fa-solid fa-circle-check"></i>
+                </center>
+                
+                <p class="card-header text-center">One Time Subscription Successfull</p>
+                <hr style="border-color: #fff;">
+                <p class="text-center text-white">Your Payment is successful, please check <br>your email for your login details to be able to continue using our service. </p>
+                <p class="text-center">Thank you for trusting us.</p>
+                <p class="text-center">If you don't receive an email, you can reach us through our customer care email: <a href="">customercare@spymate.app</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

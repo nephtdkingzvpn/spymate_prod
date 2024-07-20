@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PayPal Checkout Example</title>
+    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_SANDBOX_CLIENT_ID&currency=USD"></script>
+</head>
+<body>
+    <div id="paypal-button-container"></div>
+
+    <script>
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: '10.00' // Replace with actual amount
+                        }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    alert('Transaction completed by ' + details.payer.name.given_name);
+                    
+                    // Send details to Django backend
+                    const formData = new FormData();
+                    formData.append('orderID', data.orderID);
+                    formData.append('payerID', details.payer.payer_id);
+                    formData.append('paymentID', details.id);
+                    formData.append('amount', details.purchase_units[0].amount.value);
+
+                    fetch('/your-django-endpoint/', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Success:', data);
+                        // Redirect or show success message to user
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Handle errors and display appropriate message
+                    });
+                });
+            }
+        }).render('#paypal-button-container');
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block content %}
-<script src="https://www.paypal.com/sdk/js?client-id={{client_id}}&currency=USD&components=buttons&enable-funding=venmo&debug=true"></script>
+<!-- <script src="https://www.paypal.com/sdk/js?client-id={{client_id}}&currency=USD&components=buttons&enable-funding=venmo&debug=true"></script> -->
 
 <!-- payment start -->
 <div class="payment__container">
@@ -48,7 +48,7 @@
 </div>
 <!-- payment end -->
 
-
+<script src="https://www.paypal.com/sdk/js?client-id={{client_id}}&currency=USD&components=buttons&enable-funding=venmo"></script>
 <script>
     // Render the PayPal button into #paypal-button-container
     document.addEventListener('DOMContentLoaded', function () {
@@ -64,9 +64,44 @@
                 });
             },
             onApprove: function(data, actions) {
-                return actions.order.capture().then(function(details) {
-                    alert('Transaction completed by ' + details.payer.name.given_name);
-                    // Call your backend to save the transaction details
+                // Send a fetch API request to Django backend to process payment capture
+                const form = document.getElementById('paymentForm');
+
+                let formData = new FormData(form);
+                let name = formData.get('full_name');
+                let phone = formData.get('phone_number');
+                let email = formData.get('email');
+                
+                return fetch('{% url "paypalclient:capture_payment" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        orderID: data.orderID,
+                        name: name,
+                        phone: phone,
+                        email: email
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // alert('Transaction completed by ' + data.payerName);
+                        // Example: redirect to a thank-you page
+                        console.log(data.success_url)
+                        window.location.href = data.success_url;
+                        
+                    } else {
+                        // alert('Transaction failed. Please try again.');
+                        console.log(data.failure_url)
+                        window.location.href = data.failure_url;
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('Transaction failed. Please try again.');
                 });
             }
         }).render('#paypal-button-container');
